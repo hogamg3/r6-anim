@@ -566,7 +566,7 @@ createAnimationButton("Playing Piano", "673670051")
 createAnimationButton("GOONMAX💀", {"95383980", "167272039", "99807079", "106772613"})
 createAnimationButton("BackPack Head", "68339848")
 createAnimationButton("Crying", "180612465")
-
+createAnimationButton("Weird Legs", "248336459")
 
 
 -- Adjust button layout for more buttons as needed

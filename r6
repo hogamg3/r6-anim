@@ -1,0 +1,572 @@
+-- Create the ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local TopBar = Instance.new("Frame")
+local BottomBar = Instance.new("Frame")
+local CloseButton = Instance.new("TextButton")
+local MinimizeButton = Instance.new("TextButton") -- New Minimize Button
+local LogoImage = Instance.new("ImageLabel")
+local TitleText = Instance.new("TextLabel")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
+local SearchBar = Instance.new("TextBox") -- New search bar
+local Tabshow = Instance.new("TextButton") -- New search bar
+local TabContainer = Instance.new("TextLabel")
+local OtherTab = Instance.new("TextButton")
+local OtherFrame = Instance.new("Frame")
+local ContentFrame = Instance.new("Frame")
+local MainTab = Instance.new("TextButton")
+local TabCorner = Instance.new("UICorner")
+local SearchCorner = Instance.new("UICorner")
+local OtherCorner = Instance.new("UICorner")
+local MainCorner = Instance.new("UICorner")
+local TabshowCorner = Instance.new("UICorner")
+local LogoButton = Instance.new("TextButton");
+local bottomcorner = Instance.new("UICorner")
+local mainframecorner = Instance.new("UICorner")
+local topcorner = Instance.new("UICorner")
+
+
+-- For Animations
+local animations = {} -- To store animation tracks for toggling
+local buttons = {} -- To store buttons
+
+-- UI Properties
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+MainFrame.BackgroundTransparency = 0.2
+MainFrame.Size = UDim2.new(0, 426, 0, 258) -- Wider UI
+MainFrame.Position = UDim2.new(0.6, -200, 0.8, -300)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+mainframecorner.Parent = MainFrame
+mainframecorner.CornerRadius = UDim.new(0, 10)
+
+-- Make the frame draggable
+local UIS = game:GetService("UserInputService")
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- TopBar
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+TopBar.Size = UDim2.new(1, 0, 0, 31)
+
+topcorner.Parent = TopBar
+topcorner.CornerRadius = UDim.new(0, 10)
+
+-- BottomBar
+BottomBar.Parent = MainFrame
+BottomBar.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+BottomBar.Size = UDim2.new(1, 0, 0, 30)
+BottomBar.Position = UDim2.new(0, 0, 1, -31)
+
+bottomcorner.Parent = BottomBar
+bottomcorner.CornerRadius = UDim.new(0, 10)
+
+-- Input box for animation speed
+local SpeedInput = Instance.new("TextBox")
+local SpeedCorner = Instance.new("UICorner")
+SpeedInput.Parent = BottomBar
+SpeedInput.Size = UDim2.new(0.4, 0, 1, 0)
+SpeedInput.Position = UDim2.new(0.3, 0, 0, 0)
+SpeedInput.PlaceholderText = "Enter speed (1 = normal)"
+SpeedInput.TextScaled = true
+SpeedInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+SpeedInput.Text = ""
+
+SpeedCorner.Parent = SpeedInput
+SpeedCorner.CornerRadius = UDim.new(0, 10)
+
+-- Function to update animation speed based on input
+SpeedInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local speed = tonumber(SpeedInput.Text)
+        if speed then
+            for _, animTrack in pairs(animations) do
+                if animTrack and animTrack:IsPlaying() then
+                    animTrack:AdjustSpeed(speed)
+                end
+            end
+        end
+    end
+end)
+
+-- Search Bar
+SearchBar.Parent = TopBar
+SearchBar.Size = UDim2.new(0.4, 0, 1, 0) -- Adjusted to fit the TopBar
+SearchBar.Position = UDim2.new(0.6, -60, 0, 0) -- Positioned next to the TitleText
+SearchBar.PlaceholderText = "Search animations"
+SearchBar.TextScaled = true
+SearchBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SearchBar.TextColor3 = Color3.fromRGB(0, 0, 0)
+SearchBar.Text = ""
+
+SearchCorner.Parent = SearchBar
+SearchCorner.CornerRadius = UDim.new(0, 10)
+
+-- Function to filter animations based on search input
+SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
+    local searchText = string.lower(SearchBar.Text)
+    for _, button in pairs(buttons) do
+        if string.find(string.lower(button.Text), searchText) then
+            button.Visible = true
+        else
+            button.Visible = false
+        end
+    end
+end)
+
+Tabshow.Parent = BottomBar
+Tabshow.BackgroundTransparency = 0.4
+Tabshow.Size = UDim2.new(0, 50, 0, 30)
+Tabshow.Position = UDim2.new(0, 70, 0, 0)
+Tabshow.Text = "More"
+Tabshow.Font = Enum.Font.Cartoon
+Tabshow.TextScaled = true
+Tabshow.TextColor3 = Color3.fromRGB(0, 0, 0)
+Tabshow.BorderColor3 = Color3.fromRGB(0, 150, 0)
+Tabshow.BackgroundColor3 = Color3.fromRGB(188, 188, 255)
+
+TabContainer.Visible = false  -- Set initial visibility to false
+
+TabshowCorner.Parent = Tabshow
+TabshowCorner.CornerRadius = UDim.new(0, 10)
+
+Tabshow.MouseButton1Click:Connect(function()
+    TabContainer.Visible = not TabContainer.Visible
+end)
+
+TabContainer.Name = "TabContainer"
+TabContainer.Parent = MainFrame
+TabContainer.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+TabContainer.Position = UDim2.new(0, -100, 0, 30)
+TabContainer.Text = "Coming soon/not finished"
+TabContainer.TextWrapped = true
+TabContainer.Font = Enum.Font.Cartoon
+TabContainer.TextScaled = true
+TabContainer.Size = UDim2.new(0, 100, 1, -30)
+TabContainer.TextColor3 = Color3.fromRGB(1, 1, 1)
+TabContainer.BackgroundTransparency = 0.2
+
+TabCorner.Parent = TabContainer
+TabCorner.CornerRadius = UDim.new(0, 10)
+
+-- Logo Icon
+LogoImage.Parent = TopBar
+LogoImage.BackgroundTransparency = 1
+LogoImage.Image = "rbxassetid://13217634061"
+LogoImage.Size = UDim2.new(0, 30, 0, 30)
+LogoImage.Position = UDim2.new(0, 0, 0, 0)
+
+-- Logo Icon
+LogoButton.Parent = TopBar
+LogoButton.BackgroundTransparency = 1
+LogoButton.Size = UDim2.new(0, 30, 0, 30)
+LogoButton.Text = " "
+LogoButton.Position = UDim2.new(0, 0, 0, 0)
+
+-- Title Text
+TitleText.Parent = TopBar
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "R6 Animations Menu"
+TitleText.Font = Enum.Font.Cartoon
+TitleText.TextSize = 18
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.Size = UDim2.new(0.3, -90, 1, 0) -- Adjusted to make space for the search bar
+TitleText.Position = UDim2.new(0.4, -75, 0, 0)
+
+-- Close Button
+CloseButton.Parent = TopBar
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "X"
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+CloseButton.Size = UDim2.new(0, 30, 1, 0)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.TextScaled = true
+CloseButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+OtherTab.Name = "OtherTab"
+OtherTab.Parent = TabContainer
+OtherTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+OtherTab.Position = UDim2.new(0, 0, 0, 30)
+OtherTab.Size = UDim2.new(1, 0, 0, 30)
+OtherTab.Font = Enum.Font.Cartoon
+OtherTab.Text = "Bundle-Anim"
+OtherTab.TextWrapped = true
+OtherTab.TextColor3 = Color3.new(0, 0, 0)
+OtherTab.TextSize = 20
+OtherTab.BackgroundTransparency = 0.4
+
+OtherCorner.CornerRadius = UDim.new(0, 10)
+OtherCorner.Parent = OtherTab
+
+MainTab.Name = "MainTab"
+MainTab.Parent = TabContainer
+MainTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+MainTab.Position = UDim2.new(0, 0, 0, 0)
+MainTab.Size = UDim2.new(1, 0, 0, 30)
+MainTab.Font = Enum.Font.Cartoon
+MainTab.Text = "Main"
+MainTab.TextWrapped = true
+MainTab.TextColor3 = Color3.new(0, 0, 0)
+MainTab.TextSize = 25
+MainTab.BackgroundTransparency = 0.4
+
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainTab
+
+OtherFrame.Name = "OtherFrame"
+OtherFrame.Parent = MainFrame
+OtherFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+OtherFrame.Position = UDim2.new(0, 100, 0, 30)
+OtherFrame.Size = UDim2.new(1, -100, 1, -30)
+OtherFrame.Visible = false
+
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+ContentFrame.Position = UDim2.new(0, 0, 0, 0)
+ContentFrame.Size = UDim2.new(0, 426, 0, 258) -- Wider UI
+ContentFrame.BackgroundTransparency = 1
+
+-- Minimize Button
+MinimizeButton.Parent = TopBar
+MinimizeButton.BackgroundTransparency = 1
+MinimizeButton.Text = "v"
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+MinimizeButton.Size = UDim2.new(0, 30, 1, 0)
+MinimizeButton.Position = UDim2.new(1, -60, 0, 0)
+MinimizeButton.TextScaled = true
+MinimizeButton.TextColor3 = Color3.fromRGB(0, 0, 255)
+
+local minimized = false
+MinimizeButton.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        ScrollingFrame.Visible = false
+        BottomBar.Visible = false
+        MainFrame.Size = UDim2.new(0, 426, 0, 31)
+        MinimizeButton.Text = "^"
+    else
+        ScrollingFrame.Visible = true
+        BottomBar.Visible = true
+        MainFrame.Size = UDim2.new(0, 426, 0, 258)
+        MinimizeButton.Text = "v"
+    end
+end)
+
+-- Scrolling Frame for buttons
+ScrollingFrame.Parent = MainFrame
+ScrollingFrame.Size = UDim2.new(1, -20, 1, -70)
+ScrollingFrame.Position = UDim2.new(0, 10, 0, 40)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 8, 0)
+ScrollingFrame.ScrollBarThickness = 10
+ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+-- Set up UIGridLayout for a three-column layout
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.Parent = ScrollingFrame
+gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout.CellSize = UDim2.new(0, 120, 0, 40) -- Button size
+gridLayout.CellPadding = UDim2.new(0, 10, 0, 10) -- Space between buttons
+gridLayout.FillDirectionMaxCells = 3 -- Set number of columns to 3
+
+local activeAnimations = {} -- Table to keep track of currently active animations
+
+-- Function to create buttons for animations
+local function createAnimationButton(name, animationIds)
+    local button = Instance.new("TextButton")
+    local buttonCorner = Instance.new("UICorner")
+    button.Parent = ScrollingFrame
+    button.Text = name
+    button.Font = Enum.Font.Cartoon
+    button.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    button.TextScaled = true
+    button.TextColor3 = Color3.fromRGB(0, 0, 0)
+    button.BackgroundTransparency = 0.2
+    button.AutoButtonColor = true
+    button.BorderSizePixel = 0
+    button.TextWrapped = true
+
+    buttonCorner.Parent = button
+    buttonCorner.CornerRadius = UDim.new(0, 10)
+
+    -- Store button reference for search functionality
+    table.insert(buttons, button)
+
+    -- Button click functionality
+    button.MouseButton1Click:Connect(function()
+        local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            local animationIdsList = type(animationIds) == "table" and animationIds or {animationIds} -- Ensure animationIds is a table
+
+            -- Flag to check if any animations are currently active
+            local isActive = false 
+
+            -- Iterate through each animation ID
+            for _, animationId in ipairs(animationIdsList) do
+                if activeAnimations[animationId] then
+                    -- If the animation is already active, stop it
+                    activeAnimations[animationId]:Stop()
+                    activeAnimations[animationId] = nil -- Remove from active animations table
+                else
+                    -- Load and play the new animation
+                    local anim = Instance.new("Animation")
+                    anim.AnimationId = "rbxassetid://" .. animationId
+                    local animationTrack = humanoid:LoadAnimation(anim)
+                    animationTrack.Looped = true -- Enable looping
+                    animationTrack:Play()
+                    
+                    -- Store the active animation track
+                    activeAnimations[animationId] = animationTrack
+                    isActive = true -- Mark that at least one animation is active
+                end
+            end
+            
+            -- Change the button color based on active state
+            if isActive then
+                button.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Show as active
+            else
+                button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Reset button color
+            end
+            
+            -- Adjust speed from input box for each active animation
+            for _, animationId in ipairs(animationIdsList) do
+                if activeAnimations[animationId] then
+                    activeAnimations[animationId]:AdjustSpeed(tonumber(SpeedInput.Text) or 1)
+                end
+            end
+        end
+    end)
+end
+
+
+-- Adding buttons (you can add more here)
+createAnimationButton("Jump", "125750702")
+createAnimationButton("Dance", "182435998")
+createAnimationButton("Wave", "128777973")
+createAnimationButton("Laugh", "129423131")
+createAnimationButton("Balloon Float", "148840371")
+createAnimationButton("Barrel Throw", "31020869")
+createAnimationButton("Bike Riding Stance", "189854234")
+createAnimationButton("Guitar Equip", "192906348")
+createAnimationButton("saxtest", "30257281")
+createAnimationButton("Soccer Kick", "28458752")
+createAnimationButton("drink", "29517689")
+createAnimationButton("Goal Dance", "28488254")
+createAnimationButton("Hold", "1119816160")
+createAnimationButton("Pluck", "99198989")
+createAnimationButton("Coasting Pose", "160737288")
+createAnimationButton("Board Kick", "160737244")
+createAnimationButton("Right Turn", "160737408")
+createAnimationButton("Left Turn", "160737355")
+createAnimationButton("Throw From Bag", "30188122")
+createAnimationButton("Wand Cast", "31665427")
+createAnimationButton("Left Slash", "74894663")
+createAnimationButton("Right Slash", "74813494")
+createAnimationButton("Bloxster Motorcycle", "185299570")
+createAnimationButton("Drink Anim", "61914540")
+createAnimationButton("Hyperbike Pose", "214738896")
+createAnimationButton("RoPed Stand Up", "180270832")
+createAnimationButton("Large Gun Hold", "941134851")
+createAnimationButton("Slash", "186934658")
+createAnimationButton("SprayPaint", "78494810")
+createAnimationButton("Bang Sus", "106772613")
+createAnimationButton("Tool Slash", "129967390")
+createAnimationButton("Rocket Throw", "162861977")
+createAnimationButton("Lamp Anim", "71012326")
+createAnimationButton("Plant Anim", "74897796")
+createAnimationButton("Drink Hot Sauce", "29517689")
+createAnimationButton("Staff up", "27432691")
+createAnimationButton("Launch Hand", "33323745")
+createAnimationButton("Tool Lunge", "129967478")
+createAnimationButton("Fast Sword Slash", "41824837")
+createAnimationButton("Pitch Fork", "164025878")
+createAnimationButton("Fire Gun", "123896085")
+createAnimationButton("Staff Spin", "27763939")
+createAnimationButton("something", "123101323")
+createAnimationButton("Reload Gun", "190070243")
+createAnimationButton("Fly Wings", "90828653")
+createAnimationButton("Wave Tool", "160725720")
+createAnimationButton("FlameThrower Hold", "168086975")
+createAnimationButton("flaem", "116690317")
+createAnimationButton("Thrust", "93633158")
+createAnimationButton("StaffPound", "93696468")
+createAnimationButton("holdplz2", "116690317")
+createAnimationButton("Ollie", "160737450")
+createAnimationButton("Whack", "32659706")
+createAnimationButton("Ban Hammer Hold", "48138189")
+createAnimationButton("Cannon", "176177529")
+createAnimationButton("Laser Gun Equip", "182631367")
+createAnimationButton("Light Firethrower", "75322014")
+createAnimationButton("Toss", "75321266")
+createAnimationButton("BeatBox", "45504977")
+createAnimationButton("sword swing jump", "32659699")
+createAnimationButton("twohandswordswing", "32659706")
+createAnimationButton("Floor Crawl", "282574440")
+createAnimationButton("Dab", "183412246")
+createAnimationButton("Super Faint", "181525546")
+createAnimationButton("Dino Walk", "204328711")
+createAnimationButton("Loop Slam", "204295235")
+createAnimationButton("Float Sit", "179224234")
+createAnimationButton("Barrel Roll", "136801964")
+createAnimationButton("Jumping Jacks", "429681631")
+createAnimationButton("Weird Move", "215384594")
+createAnimationButton("Floating Head", "121572214")
+createAnimationButton("Levitate", "313762630")
+createAnimationButton("Hero Jump", "184574340")
+createAnimationButton("Head Throw", "35154961")
+createAnimationButton("Moon Dance", "45834924")
+createAnimationButton("Slap", "204062532")
+createAnimationButton("Crouch", "182724289")
+createAnimationButton("Walking Dance", "429703734")
+createAnimationButton("Spinner", "188632011")
+createAnimationButton("Holding Gun", "182393478")
+createAnimationButton("Grenade Throw", "168160500")
+createAnimationButton("Drive Thru", "168138731")
+createAnimationButton("Flute", "52154760")
+createAnimationButton("TableFlip", "111898867")
+createAnimationButton("Slash Ice", "223624106")
+createAnimationButton("zmobie", "223623937")
+createAnimationButton("Begin Smash", "120735709")
+createAnimationButton("End Smash", "120735762")
+createAnimationButton("Standing", "158821881")
+createAnimationButton("QuickSlash", "49815113")
+createAnimationButton("Sword Equip", "94160581")
+createAnimationButton("Begin Charge", "252394340")
+createAnimationButton("Charge", "252395365")
+createAnimationButton("Release Charge", "252395746")
+createAnimationButton("BDB Idle", "214747217")
+createAnimationButton("BDB Walk", "214748382")
+createAnimationButton("BDB Slash", "214744167")
+createAnimationButton("BDb Staff", "214744412")
+createAnimationButton("Weird Swing", "59085834")
+createAnimationButton("High Slash", "1098424552")
+createAnimationButton("Rock Sword Equip", "317460113")
+createAnimationButton("Bash", "193343548")
+createAnimationButton("StaffSlash", "46756384")
+createAnimationButton("Tank Guitar", "265084639")
+createAnimationButton("RHK2 Kick Ninja", "45738282")
+createAnimationButton("FireCast", "32326240")
+createAnimationButton("Sword Thrust", "32659703")
+createAnimationButton("Grim Walk", "27759788")
+createAnimationButton("Grim Double Hit", "27763344")
+createAnimationButton("Grim Strike", "27761123")
+createAnimationButton("Hold Grim", "27758613")
+createAnimationButton("Gravity Slam", "33169573")
+createAnimationButton("Wand Swing", "35978913")
+createAnimationButton("Shake Hand", "177443776")
+createAnimationButton("Eat", "103822775")
+createAnimationButton("Throw", "209875013")
+createAnimationButton("Holding Gun", "264034706")
+createAnimationButton("Shoot", "97884303")
+createAnimationButton("Reloading Gun", "97885754")
+createAnimationButton("Chop", "186934753")
+createAnimationButton("Slash", "186934658")
+createAnimationButton("Sword Pump Up", "85723345")
+createAnimationButton("Ninja Sword Slash", "45873069")
+createAnimationButton("Shoot Cannon", "182463144")
+createAnimationButton("Button Press", "75322014")
+createAnimationButton("Sword Shield", "94789762")
+createAnimationButton("Electric Guitar", "99200153")
+createAnimationButton("Pluck Guitar Electric", "99198989")
+createAnimationButton("Cheers", "314726307")
+createAnimationButton("OverHeadSwing", "74897796")
+createAnimationButton("ChopPunch", "181263498")
+createAnimationButton("UpperPunch", "181263202")
+createAnimationButton("SlingShot", "33248324")
+createAnimationButton("Rage", "72635723")
+createAnimationButton("Spin Arms", "233087184")
+createAnimationButton("Two Hand Hold Out", "233077885")
+createAnimationButton("Spin Arms 2", "259438880")
+createAnimationButton("Arm", "259440107")
+createAnimationButton("Arms Out Spin", "235542946")
+createAnimationButton("SlashAnim", "63718551")
+createAnimationButton("Kick Hit", "188443632")
+createAnimationButton("Clap", "54456096")
+createAnimationButton("idk what that is", "69427277")
+createAnimationButton("slowly arms out", "69427262")
+createAnimationButton("Salute", "186673959")
+createAnimationButton("StandStill", "167272039")
+createAnimationButton("Throw Candy", "181437419")
+createAnimationButton("Hands Shaking", "93711728")
+createAnimationButton("Shield", "49763871")
+createAnimationButton("ShieldBash", "49907410")
+createAnimationButton("Dance", "248263260")
+createAnimationButton("Slap Face", "46182987")
+createAnimationButton("Robot Dance", "466755434")
+createAnimationButton("Horn Potion Run", "126707392")
+createAnimationButton("On Fire", "90117804")
+createAnimationButton("Horse Ride", "321277423")
+createAnimationButton("Flower", "80395075")
+createAnimationButton("Hands", "159223413")
+createAnimationButton("Swing Thonas Hand", "243827693")
+createAnimationButton("Motorcycle", "247487116")
+createAnimationButton("Sword Crit Up", "66703957")
+createAnimationButton("Sword", "66702743")
+createAnimationButton("Ice Bucket Throw", "173673979")
+createAnimationButton("Holding Object", "151316061")
+createAnimationButton("Glider Fly", "90872539")
+createAnimationButton("Kick Legs", "60882887")
+createAnimationButton("Wave", "55270038")
+createAnimationButton("Idle", "94108418")
+createAnimationButton("Probably Dance", "94161088")
+createAnimationButton("Spin", "188632011")
+createAnimationButton("Weird Thrust", "94161333")
+createAnimationButton("OverHeadSwing", "94160738")
+createAnimationButton("Gun", "95383474")
+createAnimationButton("Shoot", "95383980")
+createAnimationButton("Shake", "99807079")
+createAnimationButton("Tuck Ski", "142890187")
+createAnimationButton("Dancing Jacks", {"204328711", "429681631"})
+createAnimationButton("Playing Piano", "673670051")
+createAnimationButton("GOONMAX💀", {"95383980", "167272039", "99807079", "106772613"})
+createAnimationButton("BackPack Head", "68339848")
+createAnimationButton("Crying", "180612465")
+
+
+
+-- Adjust button layout for more buttons as needed

@@ -206,7 +206,7 @@ LogoButton.Position = UDim2.new(0, 0, 0, 0)
 -- Title Text
 TitleText.Parent = TopBar
 TitleText.BackgroundTransparency = 1
-TitleText.Text = "R6 Animations Menu"
+TitleText.Text = "Animatrix"
 TitleText.Font = Enum.Font.Cartoon
 TitleText.TextSize = 18
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)

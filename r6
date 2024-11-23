@@ -36,7 +36,7 @@ ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BackgroundTransparency = 0.2
 MainFrame.Size = UDim2.new(0, 426, 0, 258) -- Wider UI
 MainFrame.Position = UDim2.new(0.6, -200, 0.8, -300)
@@ -85,7 +85,7 @@ end)
 
 -- TopBar
 TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+TopBar.BackgroundColor3 = Color3.fromRGB(100, 30, 30)
 TopBar.Size = UDim2.new(1, 0, 0, 31)
 
 topcorner.Parent = TopBar
@@ -93,7 +93,7 @@ topcorner.CornerRadius = UDim.new(0, 10)
 
 -- BottomBar
 BottomBar.Parent = MainFrame
-BottomBar.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+BottomBar.BackgroundColor3 = Color3.fromRGB(100, 30, 30)
 BottomBar.Size = UDim2.new(1, 0, 0, 30)
 BottomBar.Position = UDim2.new(0, 0, 1, -31)
 
@@ -108,8 +108,8 @@ SpeedInput.Size = UDim2.new(0.4, 0, 1, 0)
 SpeedInput.Position = UDim2.new(0.3, 0, 0, 0)
 SpeedInput.PlaceholderText = "Enter speed (1 = normal)"
 SpeedInput.TextScaled = true
-SpeedInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SpeedInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedInput.Text = ""
 
 SpeedCorner.Parent = SpeedInput
@@ -135,8 +135,8 @@ SearchBar.Size = UDim2.new(0.4, 0, 1, 0) -- Adjusted to fit the TopBar
 SearchBar.Position = UDim2.new(0.6, -60, 0, 0) -- Positioned next to the TitleText
 SearchBar.PlaceholderText = "Search animations"
 SearchBar.TextScaled = true
-SearchBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SearchBar.TextColor3 = Color3.fromRGB(0, 0, 0)
+SearchBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SearchBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 SearchBar.Text = ""
 
 SearchCorner.Parent = SearchBar
@@ -163,7 +163,7 @@ Tabshow.Font = Enum.Font.Cartoon
 Tabshow.TextScaled = true
 Tabshow.TextColor3 = Color3.fromRGB(0, 0, 0)
 Tabshow.BorderColor3 = Color3.fromRGB(0, 150, 0)
-Tabshow.BackgroundColor3 = Color3.fromRGB(188, 188, 255)
+Tabshow.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
 
 TabContainer.Visible = false  -- Set initial visibility to false
 
@@ -176,39 +176,25 @@ end)
 
 TabContainer.Name = "TabContainer"
 TabContainer.Parent = MainFrame
-TabContainer.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+TabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 TabContainer.Position = UDim2.new(0, -100, 0, 30)
 TabContainer.Text = "Coming soon/not finished"
 TabContainer.TextWrapped = true
 TabContainer.Font = Enum.Font.Cartoon
 TabContainer.TextScaled = true
 TabContainer.Size = UDim2.new(0, 100, 1, -30)
-TabContainer.TextColor3 = Color3.fromRGB(1, 1, 1)
+TabContainer.TextColor3 = Color3.fromRGB(255, 255, 255)
 TabContainer.BackgroundTransparency = 0.2
 
 TabCorner.Parent = TabContainer
 TabCorner.CornerRadius = UDim.new(0, 10)
-
--- Logo Icon
-LogoImage.Parent = TopBar
-LogoImage.BackgroundTransparency = 1
-LogoImage.Image = "rbxassetid://13217634061"
-LogoImage.Size = UDim2.new(0, 30, 0, 30)
-LogoImage.Position = UDim2.new(0, 0, 0, 0)
-
--- Logo Icon
-LogoButton.Parent = TopBar
-LogoButton.BackgroundTransparency = 1
-LogoButton.Size = UDim2.new(0, 30, 0, 30)
-LogoButton.Text = " "
-LogoButton.Position = UDim2.new(0, 0, 0, 0)
 
 -- Title Text
 TitleText.Parent = TopBar
 TitleText.BackgroundTransparency = 1
 TitleText.Text = "Animatrix"
 TitleText.Font = Enum.Font.Cartoon
-TitleText.TextSize = 18
+TitleText.TextSize = 25
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Size = UDim2.new(0.3, -90, 1, 0) -- Adjusted to make space for the search bar
 TitleText.Position = UDim2.new(0.4, -75, 0, 0)
@@ -239,7 +225,7 @@ OtherTab.TextColor3 = Color3.new(0, 0, 0)
 OtherTab.TextSize = 20
 OtherTab.BackgroundTransparency = 0.4
 
-OtherCorner.CornerRadius = UDim.new(0, 10)
+OtherCorner.CornerRadius = UDim.new(0, 9)
 OtherCorner.Parent = OtherTab
 
 MainTab.Name = "MainTab"
@@ -254,7 +240,7 @@ MainTab.TextColor3 = Color3.new(0, 0, 0)
 MainTab.TextSize = 25
 MainTab.BackgroundTransparency = 0.4
 
-MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.CornerRadius = UDim.new(0, 9)
 MainCorner.Parent = MainTab
 
 OtherFrame.Name = "OtherFrame"

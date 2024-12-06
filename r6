@@ -4,8 +4,7 @@ local MainFrame = Instance.new("Frame")
 local TopBar = Instance.new("Frame")
 local BottomBar = Instance.new("Frame")
 local CloseButton = Instance.new("TextButton")
-local MinimizeButton = Instance.new("TextButton") -- New Minimize Button
-local LogoImage = Instance.new("ImageLabel")
+local ToggleVisibilityButton = Instance.new("TextButton") -- New Minimize Button
 local TitleText = Instance.new("TextLabel")
 local ScrollingFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
@@ -13,8 +12,8 @@ local SearchBar = Instance.new("TextBox") -- New search bar
 local Tabshow = Instance.new("TextButton") -- New search bar
 local TabContainer = Instance.new("TextLabel")
 local OtherTab = Instance.new("TextButton")
-local OtherFrame = Instance.new("Frame")
-local ContentFrame = Instance.new("Frame")
+local OtherFrame = Instance.new("TextLabel")
+local ContentFrame = Instance.new("ScrollingFrame")
 local MainTab = Instance.new("TextButton")
 local TabCorner = Instance.new("UICorner")
 local SearchCorner = Instance.new("UICorner")
@@ -25,7 +24,8 @@ local LogoButton = Instance.new("TextButton");
 local bottomcorner = Instance.new("UICorner")
 local mainframecorner = Instance.new("UICorner")
 local topcorner = Instance.new("UICorner")
-
+local AnimCorner = Instance.new("UICorner")
+local AnimTab = Instance.new("TextButton")
 
 -- For Animations
 local animations = {} -- To store animation tracks for toggling
@@ -178,12 +178,7 @@ TabContainer.Name = "TabContainer"
 TabContainer.Parent = MainFrame
 TabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 TabContainer.Position = UDim2.new(0, -100, 0, 30)
-TabContainer.Text = "Coming soon/not finished"
-TabContainer.TextWrapped = true
-TabContainer.Font = Enum.Font.Cartoon
-TabContainer.TextScaled = true
 TabContainer.Size = UDim2.new(0, 100, 1, -30)
-TabContainer.TextColor3 = Color3.fromRGB(255, 255, 255)
 TabContainer.BackgroundTransparency = 0.2
 
 TabCorner.Parent = TabContainer
@@ -243,45 +238,136 @@ MainTab.BackgroundTransparency = 0.4
 MainCorner.CornerRadius = UDim.new(0, 9)
 MainCorner.Parent = MainTab
 
+AnimTab.Name = "AnimTab"
+AnimTab.Parent = TabContainer
+AnimTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+AnimTab.Position = UDim2.new(0, 0, 0, 60)
+AnimTab.Size = UDim2.new(1, 0, 0, 30)
+AnimTab.Font = Enum.Font.Cartoon
+AnimTab.Text = "Anim Scripts"
+AnimTab.TextWrapped = true
+AnimTab.TextColor3 = Color3.new(0, 0, 0)
+AnimTab.TextSize = 20
+AnimTab.BackgroundTransparency = 0.4
+
+AnimCorner.CornerRadius = UDim.new(0, 9)
+AnimCorner.Parent = AnimTab
+
 OtherFrame.Name = "OtherFrame"
 OtherFrame.Parent = MainFrame
-OtherFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-OtherFrame.Position = UDim2.new(0, 100, 0, 30)
-OtherFrame.Size = UDim2.new(1, -100, 1, -30)
-OtherFrame.Visible = false
+OtherFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+OtherFrame.Position = UDim2.new(0, 10, 0, 40)
+OtherFrame.Size = UDim2.new(1, -20, 1, -70)
+OtherFrame.BackgroundTransparency = 1
+OtherFrame.Text = "Coming Soon/Not Finished"
+OtherFrame.Font = Enum.Font.Cartoon
+OtherFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
+OtherFrame.TextScaled = true
 
 ContentFrame.Name = "ContentFrame"
 ContentFrame.Parent = MainFrame
 ContentFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-ContentFrame.Position = UDim2.new(0, 0, 0, 0)
-ContentFrame.Size = UDim2.new(0, 426, 0, 258) -- Wider UI
+ContentFrame.Position = UDim2.new(0, 10, 0, 40)
+ContentFrame.Size = UDim2.new(1, -20, 1, -70)
 ContentFrame.BackgroundTransparency = 1
+ContentFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
+ContentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ContentFrame.ScrollBarThickness = 10
 
 -- Minimize Button
-MinimizeButton.Parent = TopBar
-MinimizeButton.BackgroundTransparency = 1
-MinimizeButton.Text = "v"
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-MinimizeButton.Size = UDim2.new(0, 30, 1, 0)
-MinimizeButton.Position = UDim2.new(1, -60, 0, 0)
-MinimizeButton.TextScaled = true
-MinimizeButton.TextColor3 = Color3.fromRGB(0, 0, 255)
+ToggleVisibilityButton.Parent = TopBar
+ToggleVisibilityButton.BackgroundTransparency = 1
+ToggleVisibilityButton.Text = "v"
+ToggleVisibilityButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+ToggleVisibilityButton.Size = UDim2.new(0, 30, 1, 0)
+ToggleVisibilityButton.Position = UDim2.new(1, -60, 0, 0)
+ToggleVisibilityButton.TextScaled = true
+ToggleVisibilityButton.TextColor3 = Color3.fromRGB(0, 0, 255)
 
 local minimized = false
-MinimizeButton.MouseButton1Click:Connect(function()
+ToggleVisibilityButton.MouseButton1Click:Connect(function()
     minimized = not minimized
     if minimized then
         ScrollingFrame.Visible = false
         BottomBar.Visible = false
         MainFrame.Size = UDim2.new(0, 426, 0, 31)
-        MinimizeButton.Text = "^"
+        ToggleVisibilityButton.Text = "^"
     else
         ScrollingFrame.Visible = true
         BottomBar.Visible = true
         MainFrame.Size = UDim2.new(0, 426, 0, 258)
-        MinimizeButton.Text = "v"
+        ToggleVisibilityButton.Text = "v"
     end
 end)
+
+-- Track currently active tab
+local currentTab = "Main" -- Start with the Main tab
+local minimized = false -- Track if minimized
+
+local tabs = { 
+    {name = "Main", frame = ScrollingFrame},
+    {name = "Bundle-Anim", frame = OtherFrame},
+    {name = "Anim-Scripts", frame = ContentFrame}
+}
+
+-- Function to switch tabs
+local function switchTab(selectedTabName)
+    -- Only switch tabs if not minimized
+    if minimized then
+        return
+    end
+
+    for _, tab in pairs(tabs) do
+        tab.frame.Visible = false
+    end
+
+    for index, tab in pairs(tabs) do
+        if tab.name == selectedTabName then
+            tab.frame.Visible = true
+        end
+    end
+
+    -- Update currentTab to track the active tab
+    currentTab = selectedTabName
+end
+
+-- Toggle minimize button logic
+ToggleVisibilityButton.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    
+    if minimized then
+        -- Collapse MainFrame's size to just show the TitleBar
+        MainFrame.Size = UDim2.new(0, 300, 0, 30)  -- Shrink to the height of the TitleBar
+        -- Hide everything inside MainFrame except the TitleBar
+        for _, child in pairs(MainFrame:GetChildren()) do
+            if child ~= TitleBar then
+                child.Visible = false
+            end
+        end
+        ToggleVisibilityButton.Text = "+"
+    else
+        -- Restore MainFrame's size and show the previously active tab
+        MainFrame.Size = UDim2.new(0, 300, 0, 200)  -- Restore original size
+        switchTab(currentTab)  -- Restore the previously active tab
+        ToggleVisibilityButton.Text = "-"
+    end
+end)
+
+-- Tab button click connections
+MainTab.MouseButton1Click:Connect(function()
+    switchTab("Main")
+end)
+
+OtherTab.MouseButton1Click:Connect(function()
+    switchTab("Bundle-Anim")
+end)
+
+AnimTab.MouseButton1Click:Connect(function()
+    switchTab("Anim-Scripts")
+end)
+
+-- Start with "Main" tab visible
+switchTab("Main")
 
 -- Scrolling Frame for buttons
 ScrollingFrame.Parent = MainFrame
@@ -299,6 +385,22 @@ gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 gridLayout.CellSize = UDim2.new(0, 120, 0, 40) -- Button size
 gridLayout.CellPadding = UDim2.new(0, 10, 0, 10) -- Space between buttons
 gridLayout.FillDirectionMaxCells = 3 -- Set number of columns to 3
+
+-- Set up UIGridLayout for a three-column layout
+local gridLayout2 = Instance.new("UIGridLayout")
+gridLayout2.Parent = OtherFrame
+gridLayout2.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout2.CellSize = UDim2.new(0, 120, 0, 40) -- Button size
+gridLayout2.CellPadding = UDim2.new(0, 10, 0, 10) -- Space between buttons
+gridLayout2.FillDirectionMaxCells = 3 -- Set number of columns to 3
+
+-- Set up UIGridLayout for a three-column layout
+local gridLayout3 = Instance.new("UIGridLayout")
+gridLayout3.Parent = ContentFrame
+gridLayout3.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout3.CellSize = UDim2.new(0, 120, 0, 40) -- Button size
+gridLayout3.CellPadding = UDim2.new(0, 10, 0, 10) -- Space between buttons
+gridLayout3.FillDirectionMaxCells = 3 -- Set number of columns to 3
 
 local activeAnimations = {} -- Table to keep track of currently active animations
 
@@ -318,7 +420,7 @@ local function createAnimationButton(name, animationIds)
     button.TextWrapped = true
 
     buttonCorner.Parent = button
-    buttonCorner.CornerRadius = UDim.new(0, 10)
+    buttonCorner.CornerRadius = UDim.new(0, 7)
 
     -- Store button reference for search functionality
     table.insert(buttons, button)
@@ -369,9 +471,54 @@ local function createAnimationButton(name, animationIds)
     end)
 end
 
+-- Function to create a button for executing scripts
+local function createExecuteScriptButton(name, scriptFunction)
+    local button2 = Instance.new("TextButton")
+    local buttonCorner2 = Instance.new("UICorner")
+    button2.Parent = ContentFrame
+    button2.Size = UDim2.new(0.9, 0, 0, 50)
+    button2.Position = UDim2.new(0.05, 0, 0, 0)
+    button2.Text = name
+    button2.Font = Enum.Font.Cartoon
+    button2.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    button2.TextScaled = true
+    button2.TextColor3 = Color3.fromRGB(0, 0, 0)
+    button2.BackgroundTransparency = 0.2
+    button2.BorderSizePixel = 0
+
+    buttonCorner2.Parent = button2
+    buttonCorner2.CornerRadius = UDim.new(0, 7)
+
+    button2.MouseButton1Click:Connect(function()
+        button2.Text = "Executing."
+        wait(0.3)
+        button2.Text = "Executing.."
+        wait(0.3)
+        button2.Text = "Executing..."
+        wait(0.3)
+        button2.Text = name
+        pcall(scriptFunction)
+    end)
+end
+
+createExecuteScriptButton("R6 Jerk Off By Giobolqvi", function()
+loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
+end)
+
+createExecuteScriptButton("R6 Psycho Anim By Giobolqvi", function()
+loadstring(game:HttpGet("https://pastefy.app/YJITpCRA/raw"))() -----Psycho animation
+end)
+
+createExecuteScriptButton("R6 Killer Anim By Giobolqvi", function()
+loadstring(game:HttpGet("https://pastefy.app/riYch0rX/raw"))() -----Killer animation
+end)
+
+createExecuteScriptButton("Motion Hub", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/MotionHubBeta/BetaMotion/refs/heads/main/MotionHubBeta"))()
+end)
 
 -- Adding buttons (you can add more here)
-createAnimationButton("Jump", "125750702")
+createAnimationButton("Old Dance", "132149582")
 createAnimationButton("Dance", "182435998")
 createAnimationButton("Wave", "128777973")
 createAnimationButton("Laugh", "129423131")
@@ -553,6 +700,67 @@ createAnimationButton("GOONMAX💀", {"95383980", "167272039", "99807079", "1067
 createAnimationButton("BackPack Head", "68339848")
 createAnimationButton("Crying", "180612465")
 createAnimationButton("Weird Legs", "248336459")
+createAnimationButton("Kick Back", "33686061")
+createAnimationButton("WereWolf Curl", "42070810")
+createAnimationButton("Saxphone", "45036843")
+createAnimationButton("RHK", "45733005")
+createAnimationButton("Penguin Jump", "46196309")
+createAnimationButton("Staff Taunt", "46700863")
+createAnimationButton("Praying", "48137861")
+createAnimationButton("Flute Dance", "52155014")
+createAnimationButton("Shaking Hand", "52414165")
+createAnimationButton("Test1", "54145508")
+createAnimationButton("Stroking It", "55786615")
+createAnimationButton("Stroking It Fast", "55791140")
+createAnimationButton("Scream", "73137648")
+createAnimationButton("Sword Fire", "74815981")
+createAnimationButton("moon charge", "74909500")
+createAnimationButton("Start Rest", "75356030")
+createAnimationButton("Tapping Head", "75477112")
+createAnimationButton("Swing Hand", "78394786")
+createAnimationButton("Testzzzzz", "79418964")
+createAnimationButton("anim walk", "80979216")
+createAnimationButton("anim stand", "80979207")
+createAnimationButton("Wavy Hands", "85568863")
+createAnimationButton("Head Swing", "85570603")
+createAnimationButton("Sports Jump", "85837259")
+createAnimationButton("Call me", "86614939")
+createAnimationButton("Idle Fencing", "87983681")
+createAnimationButton("Lunge Fencing", "87985027")
+createAnimationButton("Shaking Legs", "87986341")
+createAnimationButton("Head Right Position", "88016955")
+createAnimationButton("Psycho Arms", "90814669")
+createAnimationButton("Self Harm", "91346946")
+createAnimationButton("Enrage", "93648331")
+createAnimationButton("Summon", "93693205")
+createAnimationButton("Throw", "94157627")
+createAnimationButton("Slam Leg", "94190213")
+createAnimationButton("Execute", "94790629")
+createAnimationButton("Fall Panic", "95424077")
+createAnimationButton("Spartain Kick", "96619712")
+createAnimationButton("Looking Up", "97169019")
+createAnimationButton("Jump Jets", "97170520")
+createAnimationButton("Landing Jets", "97171309")
+createAnimationButton("nothinbg", "98454170")
+createAnimationButton("yay Falling money", "99815141")
+createAnimationButton("Run Charge", "100348530")
+createAnimationButton("Football Dance", "101862746")
+createAnimationButton("Arm Test", "102492689")
+createAnimationButton("ArmTest 2", "103744157")
+createAnimationButton("ArmTest 3", "103798833")
+createAnimationButton("Laying While Snipe Gun", "113246235")
+createAnimationButton("Unconscious", "181526230")
+createAnimationButton("Laser Gun Crawl", "182749109")
+createAnimationButton("BEND OVER!!!", "182789003")
+createAnimationButton("Cover Face", "183696478")
+createAnimationButton("DinoWalk", "190075311")
+createAnimationButton("Sai Fall", "233322916")
+createAnimationButton("SideStep UpperSlash", "247744115")
+createAnimationButton("Bloxikin Walk", "248335946")
+createAnimationButton("Bloxikin Sit", "248336459")
+createAnimationButton("Crouch", "287325678")
+createAnimationButton("Sleep", "327324663")
+
 
 
 -- Adjust button layout for more buttons as needed

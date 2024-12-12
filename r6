@@ -503,9 +503,6 @@ end
 
 
 createExecuteScriptButton("Jerk Off By Giobolqvi", function()
-if character:WaitForChild("Humanoid").RigType == Enum.HumanoidRigType.R15 then
-loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-else
 loadstring(game:HttpGet("https://pastefy.app/ZhKVgCK3/raw"))()
 end)
 

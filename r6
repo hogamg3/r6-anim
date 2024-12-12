@@ -503,7 +503,7 @@ end
 
 
 createExecuteScriptButton("Jerk Off By Giobolqvi", function()
-loadstring(game:HttpGet("https://pastefy.app/ZhKVgCK3/raw"))()
+loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
 end)
 
 createExecuteScriptButton("Dash Anim By Giobolqvi", function()

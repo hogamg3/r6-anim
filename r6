@@ -501,8 +501,16 @@ local function createExecuteScriptButton(name, scriptFunction)
     end)
 end
 
-createExecuteScriptButton("R6 Jerk Off By Giobolqvi", function()
-loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
+
+createExecuteScriptButton("Jerk Off By Giobolqvi", function()
+if character:WaitForChild("Humanoid").RigType == Enum.HumanoidRigType.R15 then
+loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+else
+loadstring(game:HttpGet("https://pastefy.app/ZhKVgCK3/raw"))()
+end)
+
+createExecuteScriptButton("Dash Anim By Giobolqvi", function()
+loadstring(game:HttpGet("https://pastefy.app/ZhKVgCK3/raw"))()
 end)
 
 createExecuteScriptButton("R6 Psycho Anim By Giobolqvi", function()
